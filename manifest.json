@@ -1,0 +1,19 @@
+{
+    "name": "ExpenseIQ — Smart Spending Insights",
+    "short_name": "ExpenseIQ",
+    "description": "AI-powered expense tracker with smart insights, NLP input, and spending analytics.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f1117",
+    "theme_color": "#6c5ce7",
+    "orientation": "any",
+    "categories": ["finance", "productivity"],
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

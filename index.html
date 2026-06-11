@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Expense Tracker — Track and visualize your spending with smart insights.">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ExpenseIQ — Smart Spending Insights</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon">💰</div><span class="brand-name">ExpenseIQ</span></div>
+        <nav class="sidebar-nav">
+            <button class="nav-btn active" data-view="dashboard" id="nav-dashboard">📊 <span>Dashboard</span></button>
+            <button class="nav-btn" data-view="expenses" id="nav-expenses">📋 <span>Expenses</span></button>
+            <button class="nav-btn" data-view="analytics" id="nav-analytics">📈 <span>Analytics</span></button>
+            <button class="nav-btn" data-view="ai" id="nav-ai">🤖 <span>AI Assistant</span><span class="ai-badge">AI</span></button>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="save-status" id="save-status">💾 <span>All data saved</span></div>
+            <div class="data-actions">
+                <button class="data-btn" id="btn-export" title="Export Data">📥 <span>Export Backup</span></button>
+                <button class="data-btn" id="btn-import" title="Import Data">📤 <span>Import Backup</span></button>
+                <button class="data-btn data-btn-danger" id="btn-clear-all" title="Clear All Data">🗑️ <span>Clear All</span></button>
+            </div>
+            <button class="theme-toggle" id="theme-toggle">🌙 <span>Dark Mode</span></button>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="mobile-header" id="mobile-header">
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        <span class="mobile-brand">ExpenseIQ</span>
+        <button class="mobile-add-btn" id="mobile-add-btn">+</button>
+    </header>
+    <main class="main-content" id="main-content">
+        <!-- DASHBOARD -->
+        <section class="view active" id="view-dashboard">
+            <div class="view-header">
+                <div><h1 id="greeting">Good Evening</h1><p class="view-subtitle">Here's your spending overview</p></div>
+                <button class="btn btn-primary" id="btn-add-expense-hero">+ Add Expense</button>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card card-total"><div class="card-icon">💵</div><div class="card-info"><span class="card-label">Total Spent</span><span class="card-value" id="total-spent">₹0</span></div></div>
+                <div class="summary-card card-month"><div class="card-icon">📅</div><div class="card-info"><span class="card-label">This Month</span><span class="card-value" id="month-spent">₹0</span></div><div class="card-trend" id="month-trend"></div></div>
+                <div class="summary-card card-count"><div class="card-icon">⚡</div><div class="card-info"><span class="card-label">Transactions</span><span class="card-value" id="total-count">0</span></div></div>
+                <div class="summary-card card-avg"><div class="card-icon">⏱️</div><div class="card-info"><span class="card-label">Daily Average</span><span class="card-value" id="daily-avg">₹0</span></div></div>
+            </div>
+            <div class="insights-banner" id="insights-banner"><div class="insight-icon">💡</div><p class="insight-text" id="insight-text">Add some expenses to see smart insights about your spending habits.</p></div>
+            <!-- AI Prediction Cards -->
+            <div class="ai-predictions-row" id="ai-predictions-row">
+                <div class="ai-pred-card">
+                    <div class="ai-pred-header"><span class="ai-sparkle">✨</span><span>AI Prediction</span></div>
+                    <div class="ai-pred-label">Next Month Forecast</div>
+                    <div class="ai-pred-value" id="ai-forecast">—</div>
+                    <div class="ai-pred-sub" id="ai-forecast-sub">Add more data for predictions</div>
+                </div>
+                <div class="ai-pred-card">
+                    <div class="ai-pred-header"><span class="ai-sparkle">🧬</span><span>Spending DNA</span></div>
+                    <div class="ai-pred-label">Your Personality</div>
+                    <div class="ai-pred-value" id="ai-personality">—</div>
+                    <div class="ai-pred-sub" id="ai-personality-sub">Analyzing your habits...</div>
+                </div>
+                <div class="ai-pred-card">
+                    <div class="ai-pred-header"><span class="ai-sparkle">🎯</span><span>AI Budget</span></div>
+                    <div class="ai-pred-label">Suggested Monthly</div>
+                    <div class="ai-pred-value" id="ai-budget">—</div>
+                    <div class="ai-pred-sub" id="ai-budget-sub">Based on your patterns</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card"><h3 class="chart-title">Category Breakdown</h3><div class="chart-wrap"><canvas id="chart-category"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">Monthly Spending</h3><div class="chart-wrap"><canvas id="chart-monthly"></canvas></div></div>
+            </div>
+            <div class="recent-card">
+                <div class="recent-header"><h3>Recent Expenses</h3><button class="btn btn-ghost" id="btn-view-all">View All →</button></div>
+                <div class="expense-list" id="recent-list"><div class="empty-state" id="empty-recent"><p>📋 No expenses yet. Start tracking!</p></div></div>
+            </div>
+        </section>
+        <!-- EXPENSES -->
+        <section class="view" id="view-expenses">
+            <div class="view-header">
+                <div><h1>Expenses</h1><p class="view-subtitle">Manage all your transactions</p></div>
+                <button class="btn btn-primary" id="btn-add-expense-list">+ Add Expense</button>
+            </div>
+            <div class="filters-bar">
+                <div class="filter-chips" id="filter-chips">
+                    <button class="chip active" data-category="All">All</button>
+                    <button class="chip" data-category="Food">🍔 Food</button>
+                    <button class="chip" data-category="Travel">✈️ Travel</button>
+                    <button class="chip" data-category="Shopping">🛍️ Shopping</button>
+                    <button class="chip" data-category="Others">📦 Others</button>
+                </div>
+                <div class="search-box"><input type="text" placeholder="🔍 Search expenses..." id="search-input"></div>
+            </div>
+            <div class="expense-list full-list" id="expense-list"><div class="empty-state" id="empty-expenses"><p>📋 No expenses found.</p></div></div>
+        </section>
+        <!-- ANALYTICS -->
+        <section class="view" id="view-analytics">
+            <div class="view-header"><div><h1>Analytics</h1><p class="view-subtitle">Deep-dive into your spending patterns</p></div></div>
+            <!-- Spending Heatmap -->
+            <div class="chart-card span-full heatmap-card">
+                <div class="heatmap-header">
+                    <h3 class="chart-title">📅 Spending Heatmap</h3>
+                    <div class="heatmap-legend"><span>Less</span><div class="heatmap-legend-boxes"><span class="hm-box" data-level="0"></span><span class="hm-box" data-level="1"></span><span class="hm-box" data-level="2"></span><span class="hm-box" data-level="3"></span><span class="hm-box" data-level="4"></span></div><span>More</span></div>
+                </div>
+                <div class="heatmap-months" id="heatmap-months"></div>
+                <div class="heatmap-container">
+                    <div class="heatmap-days"><span>Mon</span><span>Wed</span><span>Fri</span></div>
+                    <div class="heatmap-grid" id="heatmap-grid"></div>
+                </div>
+                <div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+            </div>
+            <div class="analytics-grid">
+                <div class="chart-card span-full"><h3 class="chart-title">Spending Over Time</h3><div class="chart-wrap chart-wide"><canvas id="chart-timeline"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">Category Distribution</h3><div class="chart-wrap"><canvas id="chart-pie"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">Top Spending Days</h3><div class="chart-wrap"><canvas id="chart-weekday"></canvas></div></div>
+            </div>
+            <div class="insights-list" id="insights-list"></div>
+        </section>
+        <!-- AI ASSISTANT -->
+        <section class="view" id="view-ai">
+            <div class="view-header"><div><h1>🤖 AI Assistant</h1><p class="view-subtitle">Talk to your finances naturally</p></div></div>
+            <!-- NLP Quick Add -->
+            <div class="ai-chat-card">
+                <div class="ai-chat-header"><span class="ai-sparkle">✨</span><h3>Quick Add with AI</h3></div>
+                <p class="ai-chat-desc">Type naturally — e.g. <em>"spent 500 on pizza yesterday"</em> or <em>"₹1200 uber cab last friday"</em></p>
+                <div class="ai-input-row">
+                    <input type="text" id="ai-nlp-input" class="ai-nlp-input" placeholder='Try: "spent 300 on groceries today"'>
+                    <button class="btn btn-voice" id="ai-voice-btn" title="Voice Input">
+                        <span class="voice-icon">🎤</span>
+                        <span class="voice-pulse"></span>
+                    </button>
+                    <button class="btn btn-primary ai-send-btn" id="ai-nlp-btn">Parse ✨</button>
+                </div>
+                <div class="voice-status" id="voice-status"></div>
+                <div class="ai-parse-result" id="ai-parse-result"></div>
+            </div>
+            <!-- AI Budget Recommendations -->
+            <div class="ai-section-card">
+                <div class="ai-chat-header"><span class="ai-sparkle">🎯</span><h3>AI Budget Recommendations</h3></div>
+                <p class="ai-chat-desc">Smart budgets based on your spending patterns and trends.</p>
+                <div class="ai-budget-grid" id="ai-budget-grid"></div>
+            </div>
+            <!-- Anomaly Detection -->
+            <div class="ai-section-card">
+                <div class="ai-chat-header"><span class="ai-sparkle">⚠️</span><h3>Anomaly Detection</h3></div>
+                <p class="ai-chat-desc">AI-flagged unusual expenses that are significantly above your average.</p>
+                <div class="ai-anomaly-list" id="ai-anomaly-list"></div>
+            </div>
+            <!-- Savings Tips -->
+            <div class="ai-section-card">
+                <div class="ai-chat-header"><span class="ai-sparkle">💡</span><h3>AI Savings Tips</h3></div>
+                <div class="ai-tips-list" id="ai-tips-list"></div>
+            </div>
+        </section>
+    </main>
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="expense-modal">
+            <div class="modal-header"><h2 id="modal-title">Add Expense</h2><button class="modal-close" id="modal-close">&times;</button></div>
+            <form id="expense-form" autocomplete="off">
+                <div class="form-group"><label for="inp-amount">Amount (₹)</label><input type="number" id="inp-amount" placeholder="0.00" min="0" step="0.01" required></div>
+                <div class="form-group"><label for="inp-category">Category</label><select id="inp-category" required><option value="">Select category</option><option value="Food">🍔 Food</option><option value="Travel">✈️ Travel</option><option value="Shopping">🛍️ Shopping</option><option value="Others">📦 Others</option></select></div>
+                <div class="form-group"><label for="inp-date">Date</label><input type="date" id="inp-date" required></div>
+                <div class="form-group"><label for="inp-desc">Description</label><input type="text" id="inp-desc" placeholder="What did you spend on?" maxlength="100" required><div class="ai-suggest-badge" id="ai-cat-suggest" style="display:none"><span class="ai-sparkle">✨</span> AI suggests: <strong id="ai-cat-suggest-text"></strong> <button type="button" class="ai-apply-btn" id="ai-apply-cat">Apply</button></div></div>
+                <input type="hidden" id="inp-id">
+                <div class="form-actions"><button type="button" class="btn btn-ghost" id="btn-cancel">Cancel</button><button type="submit" class="btn btn-primary" id="btn-save">Save Expense</button></div>
+            </form>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="delete-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h2>Delete Expense</h2><button class="modal-close" id="delete-close">&times;</button></div>
+            <p class="delete-msg">Are you sure you want to delete this expense? This action cannot be undone.</p>
+            <div class="form-actions"><button type="button" class="btn btn-ghost" id="btn-cancel-delete">Cancel</button><button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button></div>
+        </div>
+    </div>
+    <!-- Import Modal -->
+    <div class="modal-overlay" id="import-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h2>📤 Import Data</h2><button class="modal-close" id="import-close">&times;</button></div>
+            <p class="delete-msg">Upload a previously exported JSON backup file. This will <strong>merge</strong> with your existing data (no duplicates).</p>
+            <div class="form-group"><label for="import-file">Select backup file</label><input type="file" id="import-file" accept=".json"></div>
+            <div class="form-actions"><button type="button" class="btn btn-ghost" id="btn-cancel-import">Cancel</button><button type="button" class="btn btn-primary" id="btn-confirm-import">Import</button></div>
+        </div>
+    </div>
+    <!-- Clear All Modal -->
+    <div class="modal-overlay" id="clearall-overlay">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h2>🗑️ Clear All Data</h2><button class="modal-close" id="clearall-close">&times;</button></div>
+            <p class="delete-msg">⚠️ This will permanently delete <strong>ALL</strong> your expense data. We recommend exporting a backup first. This action cannot be undone.</p>
+            <div class="form-actions"><button type="button" class="btn btn-ghost" id="btn-cancel-clearall">Cancel</button><button type="button" class="btn btn-danger" id="btn-confirm-clearall">Delete Everything</button></div>
+        </div>
+    </div>
+    <input type="file" id="import-file-hidden" accept=".json" style="display:none">
+    <div class="toast-container" id="toast-container"></div>
+    <!-- Mobile Bottom Nav -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <button class="bottom-nav-btn active" data-view="dashboard"><span class="bnav-icon">📊</span><span>Dashboard</span></button>
+        <button class="bottom-nav-btn" data-view="expenses"><span class="bnav-icon">📋</span><span>Expenses</span></button>
+        <button class="bottom-nav-btn fab" id="fab-add">+</button>
+        <button class="bottom-nav-btn" data-view="ai"><span class="bnav-icon">🤖</span><span>AI</span></button>
+        <button class="bottom-nav-btn" data-view="analytics"><span class="bnav-icon">📈</span><span>Analytics</span></button>
+    </nav>
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwa-install-banner">
+        <div class="pwa-install-content">
+            <span class="pwa-install-icon">📱</span>
+            <div class="pwa-install-text">
+                <strong>Install ExpenseIQ</strong>
+                <span>Add to home screen for offline use</span>
+            </div>
+        </div>
+        <div class="pwa-install-actions">
+            <button class="btn btn-ghost btn-sm" id="pwa-dismiss">Later</button>
+            <button class="btn btn-primary btn-sm" id="pwa-install">Install</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(r => console.log('SW registered:', r.scope)).catch(e => console.log('SW failed:', e));
+        }
+    </script>
+</body>
+</html>
